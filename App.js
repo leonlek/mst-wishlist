@@ -1,9 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, AsyncStorage } from 'react-native';
 import WishListView from './src/components/WishListView';
 import { WishList } from './src/models/WishList';
+import { onSnapshot } from 'mobx-state-tree';
+import { Item, } from 'native-base';
 
-const wishList = WishList.create({
+const initialState = {
   items: [
     {
         name: "LEGO Mindstorms EV3",
@@ -17,10 +19,26 @@ const wishList = WishList.create({
             "https://images-na.ssl-images-amazon.com/images/I/51a7xaMpneL._SX329_BO1,204,203,200_.jpg"
     }
   ]
-})
+};
+
+const wishList = WishList.create(initialState);
+
+// if (AsyncStorage.getItem('wishlishapp')) {
+//   const json = JSON.parse(AsyncStorage.getItem('wishlistapp'));
+//   if (WishList.is(json)) initialState = json;
+// }
+
+// onSnapshot(wishList, snapshot => {
+//   AsyncStorage.setItem('wishlistapp', JSON.stringify(snapshot));
+// })
 
 export default class App extends React.Component {
+  onSelectUser = (user) => {
+    this.setState({ selectedUser: user });
+  }
   render() {
+    const { group } = this.props;
+    //const seletedUser = group.users.get(this.state.seletedUser);
     return (
       <View style={styles.container}>
         <WishListView wishList={wishList} />
