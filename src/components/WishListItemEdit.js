@@ -15,7 +15,8 @@ class WishListItemEdit extends React.Component {
                 <TextInput 
                     placeholder='Price'
                     onChangeText={(price) => {
-                        if (!isNaN(price)) item.changePrice(price)
+                        const p = parseFloat(price);
+                        if (!isNaN(p)) item.changePrice(p);
                     }}
                 />
             </View>

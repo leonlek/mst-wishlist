@@ -29,15 +29,15 @@ export default class App extends React.Component {
   }
 }
 
-setInterval(() => {
-  wishList.items[0].changePrice(wishList.items[0].price + 1)
-}, 1000)
+// setInterval(() => {
+//   wishList.items[0].changePrice(wishList.items[0].price + 1)
+// }, 1000)
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
+    padding: 20,
   },
 });

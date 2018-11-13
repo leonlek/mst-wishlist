@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
+import { clone, getSnapshot, applySnapshot } from 'mobx-state-tree';
 import { Button, Label } from 'react-native-elements';
 import WishListItemEdit from './WishListItemEdit';
 
@@ -13,14 +14,35 @@ class WishListItemView extends Component {
     renderEditable() {
         return (
             <View>
-                <WishListItemEdit item={this.props.item} />
+                <WishListItemEdit item={this.state.clone} />
                 <Button 
                     title='X'
-                    onPress={() => this.setState({ isEditing: false })} 
+                    onPress={this.onCancelEdit} 
+                />
+                <Button 
+                    title='SAVE'
+                    onPress={this.onSaveEdit} 
                 />
             </View>
         )
     }
+    onToggleEdit = () => {
+        this.setState({ 
+            isEditing: true,
+            clone: clone(this.props.item)
+        })
+    }
+    onCancelEdit = () => {
+        this.setState({ isEditing: false });
+    }
+    onSaveEdit = () => {
+        applySnapshot(this.props.item, getSnapshot(this.state.clone));
+        this.setState({ 
+            isEditing: false,
+            clone: null,
+         })
+    }
+
     render() {
         const { item } = this.props;
         return this.state.isEditing ? (
@@ -32,7 +54,11 @@ class WishListItemView extends Component {
                     </Text>
                     <Button
                         title='EDIT'
-                        onPress={() => this.setState({ isEditing: true})}
+                        onPress={this.onToggleEdit}
+                    />
+                    <Button
+                        title='X'
+                        onPress={item.remove}
                     />
                 </View>
         ) 
