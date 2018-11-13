@@ -16,7 +16,8 @@
     "mobx-react": "^5.3.6",
     "mobx-state-tree": "^3.7.1",
     "react": "16.5.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz"
+    "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
+    "react-native-elements": "^0.19.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
@@ -24,7 +25,7 @@
   "jest": {
     "preset": "react-native",
     "transformIgnorePatterns": [
-        "node_modules/(?!(react-native|my-project|redux-persist|react-native-linear-gradient|react-native-vector-icons|react-navigation)/)"
+      "node_modules/(?!(react-native|my-project|redux-persist|react-native-linear-gradient|react-native-vector-icons|react-navigation)/)"
     ]
   }
 }
