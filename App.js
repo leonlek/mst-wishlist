@@ -3,7 +3,7 @@ import { StyleSheet, View, AsyncStorage } from 'react-native';
 import WishListView from './src/components/WishListView';
 import { Group } from './src/models/Group';
 import { onSnapshot } from 'mobx-state-tree';
-import { Text, Item, Picker, } from 'native-base';
+import { Text, Item, Picker, Button, Icon } from 'native-base';
 
 let initialState = {
   users: {
@@ -56,6 +56,7 @@ export default class App extends React.Component {
           <Picker 
             mode='dropdown'
             placeholder='select user'
+            iosIcon={<Icon name="ios-arrow-down" />}
             selectedValue={this.state.selectedUser}
             onValueChange={(user) => this.onSelectUser(user)}
           >
@@ -65,6 +66,7 @@ export default class App extends React.Component {
           </Picker>
         </Item>
         {selectedUser && <WishListView wishList={selectedUser.wishList} />}
+        {selectedUser && <Button block onPress={selectedUser.getSuggestions}><Text>Suggestions</Text></Button>}
       </View>
     );
   }
