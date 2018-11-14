@@ -6,7 +6,7 @@ import { Group } from './src/models/Group';
 import { onSnapshot } from 'mobx-state-tree';
 import { Text, Item, Picker, Button, Icon } from 'native-base';
 
-let initialState = {
+let initialState_ = {
   users: {
     "a342": {
         id: "a342",
@@ -36,7 +36,10 @@ let initialState = {
   } 
 }
 
+let initialState = { users: [] };
+
 const group = Group.create(initialState);
+//group.load(); automatically load as afterCreate() is invoked
 
 export default class App extends React.Component {
   constructor(props) {
@@ -61,8 +64,8 @@ export default class App extends React.Component {
             selectedValue={this.state.selectedUser}
             onValueChange={(user) => this.onSelectUser(user)}
           >
-            {Array.from(group.users.values()).map(user => 
-              <Picker.Item label={user.name} key={user.id} value={user.id} />
+              {Array.from(group.users.values()).map(user => 
+                <Picker.Item label={user.name} key={user.id} value={user.id} />
               )}
           </Picker>
         </Item>
@@ -93,6 +96,18 @@ const styles = StyleSheet.create({
   },
 });
 
+
+{/* <Picker 
+  mode='dropdown'
+  placeholder='select user'
+  iosIcon={<Icon name="ios-arrow-down" />}
+  selectedValue={this.state.selectedUser}
+  onValueChange={(user) => this.onSelectUser(user)}
+>
+  {Array.from(group.users.values()).map(user => 
+    <Picker.Item label={user.name} key={user.id} value={user.id} />
+    )}
+</Picker> */}
 
 // const initialState = {
 //   items: [

@@ -1,4 +1,4 @@
-import { types, flow, identifier} from 'mobx-state-tree';
+import { types, flow, identifier, applySnapshot, getSnapshot} from 'mobx-state-tree';
 import { WishList } from './WishList';
 
 const User = types.model({
@@ -19,8 +19,57 @@ const User = types.model({
 }));
 
 export const Group = types.model({
-    users: types.map(User)
+    // users: types.optional(types.map(User), {})
+    // users: types.map(User)
+    users: types.optional(types.array(User), [])
 }).actions(self => ({
+    load: flow(function* load() {
+        try {
+            const response = yield window.fetch(`http://localhost:3001/users`);
+            applySnapshot(self.users, yield response.json());
+            console.log('getSnapshot:', getSnapshot(self))
+            //const json = yield response.json();
+            // json.map(user => {
+            //     console.log('user: ', user.id, user.name)
+            // })
+            //console.log(yield response.json());
+            // applySnapshot(self.users, {
+            //     users: {
+            //         name:'alex',
+            //         gender:'m',
+            //         id:'users',
+            //         recipient: '',
+            //         wishList: {},
+            //     }
+            // })
+            // const user = {
+            //     users: [
+            //         {
+            //             name:'alex',
+            //             gender:'m',
+            //             id:'users',
+            //             recipient: '',
+            //             wishList: {},
+            //         },
+            //         {
+            //             id:'alex',
+            //             name:'leonlek',
+            //             gender: 'm',
+            //             recipient: '',
+            //             wishList: {},
+            //         }
+            //     ]
+            // }
+            // console.log(getSnapshot(self))
+            // console.log("​load:flow -> user", user)
+            // const json = yield response.json(); 
+			// console.log("​load:flow -> json", json)
+            // applySnapshot(self.users, json);
+            // console.log(getSnapshot(self))
+        } catch (error) {
+            console.log('error flow:', error);
+        }
+    }),
     drawLots() {
         const allUsers = Array.from(self.users.values())
 
@@ -51,5 +100,8 @@ export const Group = types.model({
                         }
                     }
             })
+    },
+    afterCreate() {
+        self.load();
     }
 }));
