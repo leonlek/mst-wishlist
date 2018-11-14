@@ -9,7 +9,7 @@ class WishListItemEdit extends React.Component {
     render() {
         const { item } = this.props;
         return (
-            <View>
+            <View style={{ width: 300, length: 300 }}>
                 <Item regular>
                     <Input 
                         placeholder='Name'

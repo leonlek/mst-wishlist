@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import { StyleSheet, View, AsyncStorage } from 'react-native';
 import WishListView from './src/components/WishListView';
 import { Group } from './src/models/Group';
@@ -65,13 +66,23 @@ export default class App extends React.Component {
               )}
           </Picker>
         </Item>
-        {selectedUser && <WishListView wishList={selectedUser.wishList} />}
-        {selectedUser && <Button block onPress={selectedUser.getSuggestions}><Text>Suggestions</Text></Button>}
+        <Button onPress={group.drawLots}><Text>Draw Lots</Text></Button>
+        {selectedUser && <User user={selectedUser} />}
       </View>
     );
   }
 }
 
+const User = observer(({ user }) => (
+  <View style={{ width: 300, length: 300 }}>
+    <WishListView wishList={user.wishList} />
+    <Button onPress={user.getSuggestions}>
+      <Text>Suggestions</Text>
+      <Text>{user.recipient ? user.recipient.name : ''}</Text>
+      {user.recipient && <WishListView wishList={user.recipient.wishList} />}
+    </Button>
+  </View>
+)) 
 
 const styles = StyleSheet.create({
   container: {

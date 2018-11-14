@@ -28,7 +28,7 @@ class WishListItemEntry extends React.Component {
 
     render() {
         return (
-            <View>
+            <View style={{ width: 300, length: 300 }}>
                 <WishListItemEdit item={this.state.entry} />
                 <Button onPress={this.onAdd} title='ADD' />
             </View>

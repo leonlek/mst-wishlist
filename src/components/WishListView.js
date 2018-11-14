@@ -6,7 +6,7 @@ import WishListItemView from './WishListItemView';
 import WishListItemEntry from './WishListItemEntry';
 
 const WishListView = ({ wishList }) => (
-    <View>
+    <View style={{ width: 300, length: 300 }}>
         {wishList.items.map((item, idx) => <WishListItemView key={idx} item={item} />)}
         <Text>Total : {wishList.totalPrice}THB</Text>
         <WishListItemEntry wishList={wishList} />

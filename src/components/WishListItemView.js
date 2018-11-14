@@ -13,7 +13,7 @@ class WishListItemView extends Component {
     }
     renderEditable() {
         return (
-            <View>
+            <View style={{ width: 300, length: 300 }}>
                 <WishListItemEdit item={this.state.clone} />
                 <Button 
                     title='X'
@@ -48,7 +48,7 @@ class WishListItemView extends Component {
         return this.state.isEditing ? (
             this.renderEditable()   
         ) : (
-                <View style={{ flexDirection: "row" }}>
+                <View style={{ flexDirection: "row", width: 300, length: 300 }}>
                     <Text>
                         {item.name} : price is => {item.price}
                     </Text>
