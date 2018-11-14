@@ -1,4 +1,4 @@
-import { types, flow, identifier, applySnapshot, getSnapshot} from 'mobx-state-tree';
+import { types, flow, applySnapshot, getSnapshot} from 'mobx-state-tree';
 import { WishList } from './WishList';
 
 const User = types.model({
@@ -22,86 +22,65 @@ export const Group = types.model({
     // users: types.optional(types.map(User), {})
     // users: types.map(User)
     users: types.optional(types.array(User), [])
-}).actions(self => ({
-    load: flow(function* load() {
-        try {
-            const response = yield window.fetch(`http://localhost:3001/users`);
-            applySnapshot(self.users, yield response.json());
-            console.log('getSnapshot:', getSnapshot(self))
-            //const json = yield response.json();
-            // json.map(user => {
-            //     console.log('user: ', user.id, user.name)
-            // })
-            //console.log(yield response.json());
-            // applySnapshot(self.users, {
-            //     users: {
-            //         name:'alex',
-            //         gender:'m',
-            //         id:'users',
-            //         recipient: '',
-            //         wishList: {},
-            //     }
-            // })
-            // const user = {
-            //     users: [
-            //         {
-            //             name:'alex',
-            //             gender:'m',
-            //             id:'users',
-            //             recipient: '',
-            //             wishList: {},
-            //         },
-            //         {
-            //             id:'alex',
-            //             name:'leonlek',
-            //             gender: 'm',
-            //             recipient: '',
-            //             wishList: {},
-            //         }
-            //     ]
-            // }
-            // console.log(getSnapshot(self))
-            // console.log("​load:flow -> user", user)
-            // const json = yield response.json(); 
-			// console.log("​load:flow -> json", json)
-            // applySnapshot(self.users, json);
-            // console.log(getSnapshot(self))
-        } catch (error) {
-            console.log('error flow:', error);
-        }
-    }),
-    drawLots() {
-        const allUsers = Array.from(self.users.values())
+}).actions(self => {
+    let controller;
+    
+    return {
+        load: flow(function* load() {
 
-            // not enough users, bail out
-            if (allUsers.length <= 1) return
+            controller = window.AbortController && new window.AbortController();
+            try {
+                const response = yield window.fetch(`http://localhost:3001/users`, {
+                    signal: controller && controller.signal
+                });
+                applySnapshot(self.users, yield response.json());
+                console.log('getSnapshot:', getSnapshot(self));
+                console.log('success');
+            } catch (error) {
+                console.log('error flow:', error);
+                console.log('aborted', error.name);
+            }
+        }),
+        reload() {
+            if (controller) controller.abort();
+            self.load();
+        },
+        beforeDestroy() {
+            if (controller) controller.abort();
+        },
+        afterCreate() {
+            self.load();
+        },
+        drawLots() {
+            const allUsers = Array.from(self.users.values())
 
-            // not assigned lots
-            let remaining = allUsers.slice()
+                // not enough users, bail out
+                if (allUsers.length <= 1) return
 
-            allUsers.forEach(user => {
-                // edge case: the only person without recipient
-                // is the same as the only remaining lot
-                // swap lot's with some random other person
-                if (remaining.length === 1 && remaining[0] === user) {
-                    const swapWith = allUsers[Math.floor(Math.random() * (allUsers.length - 1))]
-                    user.recipients = swapWith.recipient
-                    swapWith.recipient = self
-                } else
-                    while (!user.recipient) {
-                        // Pick random lot from remaing list
-                        let recipientIdx = Math.floor(Math.random() * remaining.length)
+                // not assigned lots
+                let remaining = allUsers.slice()
 
-                        // If it is not the current user, assign it as recipient
-                        // and remove the lot
-                        if (remaining[recipientIdx] !== user) {
-                            user.recipient = remaining[recipientIdx]
-                            remaining.splice(recipientIdx, 1)
+                allUsers.forEach(user => {
+                    // edge case: the only person without recipient
+                    // is the same as the only remaining lot
+                    // swap lot's with some random other person
+                    if (remaining.length === 1 && remaining[0] === user) {
+                        const swapWith = allUsers[Math.floor(Math.random() * (allUsers.length - 1))]
+                        user.recipients = swapWith.recipient
+                        swapWith.recipient = self
+                    } else
+                        while (!user.recipient) {
+                            // Pick random lot from remaing list
+                            let recipientIdx = Math.floor(Math.random() * remaining.length)
+
+                            // If it is not the current user, assign it as recipient
+                            // and remove the lot
+                            if (remaining[recipientIdx] !== user) {
+                                user.recipient = remaining[recipientIdx]
+                                remaining.splice(recipientIdx, 1)
+                            }
                         }
-                    }
-            })
-    },
-    afterCreate() {
-        self.load();
+                })
+        },
     }
-}));
+});
